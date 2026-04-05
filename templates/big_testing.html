@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Recycling AI Model - Prototype</title>
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+            body {
+                background: #f8f9fa;
+                font-family: "Fira Sans", sans-serif;
+            }
+
+            .upload-card {
+                border-radius: 15px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .upload-area {
+                border: 2px dashed #28a745;
+                border-radius: 12px;
+                padding: 40px;
+                cursor: pointer;
+                transition: 0.3s;
+                background: #ffffff;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .upload-area.dragover {
+                background: #e9f7ef;
+                border-color: #198754;
+                transform: scale(1.02);
+            }
+
+            .upload-area.scanning::after {
+                content: "";
+                position: absolute;
+                top: -100%;
+                left: 0;
+                width: 100%;
+                height: 200%;
+                background: linear-gradient(
+                    rgba(40, 167, 69, 0.1),
+                    rgba(40, 167, 69, 0.4),
+                    rgba(40, 167, 69, 0.1)
+                );
+                animation: scan 2s linear infinite;
+            }
+
+            @keyframes scan {
+                0% {
+                    transform: translateY(-100%);
+                }
+                100% {
+                    transform: translateY(100%);
+                }
+            }
+
+            #preview {
+                max-width: 100%;
+                max-height: 300px;
+                margin-top: 15px;
+                border-radius: 12px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                display: none;
+                opacity: 0;
+                transition: opacity 0.8s ease;
+            }
+
+            #preview.show {
+                display: block;
+                opacity: 1;
+            }
+
+            .spinner-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+
+            footer {
+                background: #212529;
+                color: white;
+                padding: 15px 0;
+            }
+
+            .fade-down {
+                animation: fadeDown 0.8s ease forwards;
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            #liveSection {
+                transition: opacity 0.3s ease;
+            }
+
+            @keyframes fadeDown {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .progress-bar {
+                transition: width 2s ease-in-out;
+            }
+        </style>
+    </head>
+
+    <body class="d-flex flex-column min-vh-100">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold fs-4" href="#">♻ Recycling AI</a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div
+                    class="collapse navbar-collapse justify-content-end"
+                    id="navbarNav"
+                >
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/team">Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/user-guide"
+                                >User Guide</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container my-5 flex-grow-1 fade-down">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <div class="card upload-card p-4 text-center">
+                        <h3 class="mb-4">Upload Trash Image</h3>
+
+                        <form
+                            id="uploadForm"
+                            action="/"
+                            method="post"
+                            enctype="multipart/form-data"
+                        >
+                            <div id="dropArea" class="upload-area w-100">
+                                <h5>Drag & Drop Image Here</h5>
+                                <p class="text-muted small mb-2">
+                                    or click to select
+                                </p>
+                                <div
+                                    class="d-flex justify-content-center gap-2 flex-wrap mt-2"
+                                >
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-success btn-sm"
+                                        id="browseBtn"
+                                    >
+                                        Browse File
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-success btn-sm"
+                                        id="mobileCameraBtn"
+                                    >
+                                        📷 Take Photo
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        id="switchCamBtn"
+                                        class="btn btn-outline-success btn-sm"
+                                    >
+                                        🔄 Switch Camera
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-success btn-sm"
+                                        id="webcamBtn"
+                                    >
+                                        🎥 Use Camera
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input
+                                type="file"
+                                name="image"
+                                id="imageInput"
+                                class="d-none"
+                                accept="image/*"
+                                required
+                            />
+
+                            <img id="preview" class="img-fluid mx-auto" />
+
+                            <div
+                                id="liveSection"
+                                class="text-center mt-3"
+                                style="display: none"
+                            >
+                                <div
+                                    style="
+                                        position: relative;
+                                        display: inline-block;
+                                    "
+                                >
+                                    <video
+                                        id="video"
+                                        autoplay
+                                        playsinline
+                                        muted
+                                        class="img-fluid rounded"
+                                    ></video>
+                                    <canvas
+                                        id="overlayCanvas"
+                                        style="
+                                            position: absolute;
+                                            top: 0;
+                                            left: 0;
+                                        "
+                                    ></canvas>
+                                </div>
+                                <canvas
+                                    id="canvas"
+                                    style="display: none"
+                                ></canvas>
+
+                                <h4 class="mt-3">Live Prediction:</h4>
+                                <h5 id="liveResult" class="text-success">
+                                    Waiting...
+                                </h5>
+                                <p id="liveConfidence"></p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg w-100 mt-4"
+                            >
+                                Predict
+                            </button>
+
+                            <p id="errorMsg" class="text-danger mt-3"></p>
+                        </form>
+                    </div>
+
+                    {% if img_data %}
+                    <div class="card mt-4 p-4 text-center shadow-sm fade-down">
+                        <h5>Uploaded Image</h5>
+                        <img
+                            src="data:image/png;base64,{{ img_data }}"
+                            class="img-fluid rounded mt-3"
+                        />
+                    </div>
+                    {% endif %} {% if prediction %}
+                    <div class="card mt-4 p-4 text-center shadow-sm fade-down">
+                        <h4 class="fw-bold">Prediction Result</h4>
+
+                        <h5 class="mt-3 text-success text-capitalize">
+                            {{ prediction }}
+                        </h5>
+
+                        <p class="mb-2">
+                            Confidence: <strong>{{ confidence }}%</strong>
+                        </p>
+
+                        <div class="progress mt-3" style="height: 25px">
+                            <div
+                                id="confidenceBar"
+                                class="progress-bar {% if confidence|float > 80 %} bg-success {% elif confidence|float > 50 %} bg-warning {% else %} bg-danger {% endif %} progress-bar-striped progress-bar-animated"
+                                role="progressbar"
+                                style="width: 0%"
+                                aria-valuenow="{{ confidence }}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            >
+                                {{ confidence }}%
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center mt-auto">
+            <div class="container">
+                &copy; <span id="year"></span> Recycling AI Company.
+            </div>
+        </footer>
+
+        <div class="spinner-overlay" id="spinner">
+            <div class="text-center text-white">
+                <div class="spinner-border" role="status"></div>
+                <p class="mt-3">Analyzing image...</p>
+            </div>
+        </div>
+
+        <script>
+            // =============================
+            // BASIC SETUP
+            // =============================
+            document.getElementById("year").textContent =
+                new Date().getFullYear();
+
+            const liveSection = document.getElementById("liveSection");
+            const imageInput = document.getElementById("imageInput");
+            const preview = document.getElementById("preview");
+            const dropArea = document.getElementById("dropArea");
+            const form = document.getElementById("uploadForm");
+            const spinner = document.getElementById("spinner");
+            const errorMsg = document.getElementById("errorMsg");
+
+            const browseBtn = document.getElementById("browseBtn");
+            const mobileCameraBtn = document.getElementById("mobileCameraBtn");
+            const webcamBtn = document.getElementById("webcamBtn");
+
+            const switchCamBtn = document.getElementById("switchCamBtn");
+            switchCamBtn.style.display = "none"; // hide initially
+
+            const video = document.getElementById("video");
+            const canvas = document.getElementById("canvas");
+
+            const overlay = document.getElementById("overlayCanvas");
+            const octx = overlay.getContext("2d");
+
+            const liveResult = document.getElementById("liveResult");
+            const liveConfidence = document.getElementById("liveConfidence");
+
+            const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+            let stream = null;
+            let isCameraOn = false;
+
+            let lastSent = 0;
+            const SEND_INTERVAL = 200; // ms
+
+            // =============================
+            // DEVICE DETECTION
+            // =============================
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(
+                navigator.userAgent,
+            );
+
+            if (isMobile) {
+                webcamBtn.style.display = "none"; // hide laptop-only
+                mobileCameraBtn.style.display = "inline-block"; // ensure mobile button is visible
+                switchCamBtn.style.display = "none"; // hide switch button until camera starts
+            } else {
+                mobileCameraBtn.style.display = "none"; // hide on desktop
+                switchCamBtn.style.display = "none"; // hide switch button on desktop
+            }
+
+            // =============================
+            // BROWSE FILE
+            // =============================
+            browseBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                imageInput.removeAttribute("capture");
+                imageInput.click();
+            });
+
+            // =============================
+            // MOBILE CAMERA
+            // =============================
+            // ✅ Global variables
+            let currentFacing = "environment"; // default back camera
+
+            // ✅ Function to start camera
+            async function startCamera(facingMode = "environment") {
+                if (stream) stream.getTracks().forEach((track) => track.stop());
+
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: facingMode,
+                            width: { ideal: 1280, min: 640 },
+                            height: { ideal: 720, min: 480 },
+                        },
+                        audio: false,
+                    });
+
+                    video.srcObject = stream;
+                    video.muted = true; // autoplay requirement
+                    video.playsInline = true; // iOS requirement
+                    video.style.display = "block";
+                    liveSection.style.display = "block";
+
+                    isCameraOn = true;
+                    switchCamBtn.style.display = "inline-block";
+                    startLiveDetection();
+                    liveResult.textContent = "Detecting...";
+                    liveConfidence.textContent = "";
+                } catch (err) {
+                    console.error("Camera error:", err);
+                    alert("Could not start camera: " + err.message);
+                }
+            }
+
+            // ✅ Mobile camera button click
+            mobileCameraBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+
+                if (!isCameraOn) {
+                    currentFacing = "environment"; // default back camera
+                    await startCamera(currentFacing);
+                    mobileCameraBtn.textContent = "❌ Stop Camera";
+                } else {
+                    stopCamera();
+                }
+            });
+
+            // ✅ Switch camera button click
+            switchCamBtn.addEventListener("click", async () => {
+                currentFacing =
+                    currentFacing === "environment" ? "user" : "environment";
+                await startCamera(currentFacing);
+            });
+
+            // =============================
+            // CAMERA TOGGLE (MAIN FEATURE)
+            // =============================
+            webcamBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+
+                if (!isCameraOn) {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            video: true,
+                        });
+
+                        video.srcObject = stream;
+                        video.style.display = "block";
+
+                        liveSection.style.display = "block";
+
+                        // Remove uploaded image
+                        preview.classList.remove("show");
+                        preview.src = "";
+                        imageInput.value = "";
+
+                        isCameraOn = true;
+                        startLiveDetection();
+                        webcamBtn.textContent = "❌ Stop Camera";
+
+                        liveResult.textContent = "Detecting...";
+                        liveConfidence.textContent = "";
+                    } catch (err) {
+                        alert("Camera permission denied");
+                    }
+                } else {
+                    stopCamera();
+                }
+            });
+
+            function stopCamera() {
+                if (stream) {
+                    stream.getTracks().forEach((track) => track.stop());
+                }
+
+                video.style.display = "none";
+
+                // HIDE live section
+                liveSection.style.display = "none";
+
+                isCameraOn = false;
+                mobileCameraBtn.textContent = "📷 Take Photo";
+                switchCamBtn.style.display = "none"; // hide switch button
+
+                webcamBtn.textContent = "🎥 Use Camera";
+            }
+
+            // =============================
+            // FILE UPLOAD HANDLER
+            // =============================
+            imageInput.addEventListener("change", function () {
+                const file = this.files[0];
+                if (!file) return;
+
+                // Stop camera if running
+                if (isCameraOn) stopCamera();
+
+                // Hide live section just in case
+                liveSection.style.opacity = "0";
+                setTimeout(() => {
+                    liveSection.style.display = "none";
+                }, 1000);
+
+                if (file.size > MAX_FILE_SIZE) {
+                    errorMsg.textContent = "File too large! Max 10MB.";
+                    imageInput.value = "";
+                    preview.classList.remove("show");
+                    return;
+                }
+
+                errorMsg.textContent = "";
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.add("show");
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // =============================
+            // DRAG & DROP
+            // =============================
+            dropArea.addEventListener("click", (e) => {
+                if (e.target.tagName !== "BUTTON") {
+                    imageInput.click();
+                }
+            });
+
+            dropArea.addEventListener("dragover", (e) => {
+                e.preventDefault();
+                dropArea.classList.add("dragover");
+            });
+
+            dropArea.addEventListener("dragleave", () => {
+                dropArea.classList.remove("dragover");
+            });
+
+            dropArea.addEventListener("drop", (e) => {
+                e.preventDefault();
+                dropArea.classList.remove("dragover");
+
+                const file = e.dataTransfer.files[0];
+
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                imageInput.files = dt.files;
+
+                imageInput.dispatchEvent(new Event("change"));
+            });
+
+            // =============================
+            // FORM SUBMIT (SPINNER)
+            // =============================
+            form.addEventListener("submit", function () {
+                dropArea.classList.add("scanning");
+                spinner.style.display = "flex";
+            });
+
+            // =============================
+            // PROGRESS BAR ANIMATION
+            // =============================
+            window.addEventListener("load", function () {
+                const bar = document.getElementById("confidenceBar");
+                if (bar) {
+                    const confidence = bar.getAttribute("aria-valuenow");
+                    setTimeout(() => {
+                        bar.style.width = confidence + "%";
+                    }, 300);
+                }
+            });
+
+            // =============================
+            // LIVE AI PREDICTION
+            // =============================
+            async function sendFrame() {
+                if (!isCameraOn || !video.videoWidth) return;
+
+                // Match canvas size with video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                const scaleX = overlay.width / video.videoWidth;
+                const scaleY = overlay.height / video.videoHeight;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(video, 0, 0);
+
+                const blob = await new Promise((resolve) =>
+                    canvas.toBlob(resolve, "image/jpeg"),
+                );
+
+                const formData = new FormData();
+                formData.append("image", blob, "frame.jpg");
+
+                try {
+                    const res = await fetch("/predict", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    const rect = video.getBoundingClientRect();
+
+                    overlay.width = rect.width;
+                    overlay.height = rect.height;
+
+                    const data = await res.json();
+
+                    // 🔥 Clear previous drawings
+                    octx.clearRect(0, 0, overlay.width, overlay.height);
+
+                    // 🔥 Draw boxes
+                    data.boxes.forEach((box) => {
+                        const { x1, y1, x2, y2, prediction, confidence } = box;
+
+                        // Rectangle
+                        octx.strokeStyle = "lime";
+                        octx.lineWidth = 3;
+                        const sx1 = x1 * scaleX;
+                        const sy1 = y1 * scaleY;
+                        const sx2 = x2 * scaleX;
+                        const sy2 = y2 * scaleY;
+
+                        octx.strokeRect(sx1, sy1, sx2 - sx1, sy2 - sy1);
+
+                        // Text
+                        octx.fillStyle = "lime";
+                        octx.font = "16px Arial";
+                        octx.fillText(
+                            `${prediction} (${confidence}%)`,
+                            sx1,
+                            sy1 > 10 ? sy1 - 5 : sy1 + 15,
+                        );
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            // Run every 1 second (ONLY when camera ON)
+            let isProcessing = false;
+
+            async function startLiveDetection() {
+                async function loop() {
+                    if (!isCameraOn) return;
+
+                    const now = Date.now();
+                    if (!isProcessing && now - lastSent > SEND_INTERVAL) {
+                        isProcessing = true;
+                        await sendFrame(); // POST to /predict
+                        isProcessing = false;
+                        lastSent = now;
+                    }
+
+                    requestAnimationFrame(loop); // still smooth animation
+                }
+
+                loop();
+            }
+
+            switchCamBtn.addEventListener("click", async () => {
+                currentFacing =
+                    currentFacing === "environment" ? "user" : "environment";
+                await startCamera(currentFacing);
+            });
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

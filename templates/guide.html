@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>User Guide — REGAIA</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --earth: #1a1a0f;
+                --bark: #2b2b1a;
+                --moss: #3d5c2e;
+                --leaf: #5a8a3f;
+                --sage: #8ab870;
+                --mist: #c4ddb2;
+                --cream: #f0ede4;
+                --gold: #c8a84b;
+                --gold-light: #e4cb7a;
+                --card-bg: rgba(26, 26, 15, 0.85);
+                --border: rgba(138, 184, 112, 0.2);
+                --border-gold: rgba(200, 168, 75, 0.2);
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                background-color: var(--earth);
+                color: var(--cream);
+                font-family: "DM Sans", sans-serif;
+                font-weight: 300;
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+
+            /* ===== BACKGROUND ===== */
+            .bg-canvas {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                pointer-events: none;
+                overflow: hidden;
+            }
+            .bg-canvas::before {
+                content: "";
+                position: absolute;
+                inset: -50%;
+                background:
+                    radial-gradient(
+                        ellipse 55% 45% at 15% 25%,
+                        rgba(61, 92, 46, 0.3) 0%,
+                        transparent 60%
+                    ),
+                    radial-gradient(
+                        ellipse 45% 55% at 85% 75%,
+                        rgba(90, 138, 63, 0.15) 0%,
+                        transparent 55%
+                    ),
+                    radial-gradient(
+                        ellipse 35% 35% at 60% 5%,
+                        rgba(200, 168, 75, 0.06) 0%,
+                        transparent 50%
+                    );
+                animation: bgPulse 14s ease-in-out infinite alternate;
+            }
+            @keyframes bgPulse {
+                0% {
+                    transform: scale(1) rotate(0deg);
+                    opacity: 0.7;
+                }
+                100% {
+                    transform: scale(1.06) rotate(0.8deg);
+                    opacity: 1;
+                }
+            }
+            .grain {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                pointer-events: none;
+                opacity: 0.022;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+                background-size: 128px;
+            }
+
+            /* ===== NAVBAR ===== */
+            nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                padding: 0 2rem;
+                height: 72px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(26, 26, 15, 0.75);
+                backdrop-filter: blur(20px) saturate(1.5);
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+            }
+            .logo-mark {
+                width: 36px;
+                height: 36px;
+            }
+            .logo-mark svg {
+                width: 100%;
+                height: 100%;
+            }
+            .logo-text {
+                font-family: "Cinzel", serif;
+                font-size: 1.4rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                color: var(--cream);
+                line-height: 1;
+            }
+            .logo-sub {
+                font-family: "DM Sans", sans-serif;
+                font-size: 0.55rem;
+                font-weight: 300;
+                letter-spacing: 0.25em;
+                color: var(--sage);
+                text-transform: uppercase;
+                line-height: 1;
+                display: block;
+                margin-top: 2px;
+            }
+            .nav-links {
+                display: flex;
+                gap: 2.5rem;
+                list-style: none;
+            }
+            .nav-links a {
+                font-size: 0.8rem;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: rgba(240, 237, 228, 0.6);
+                text-decoration: none;
+                transition: color 0.2s;
+                font-weight: 400;
+            }
+            .nav-links a:hover,
+            .nav-links a.active {
+                color: var(--sage);
+            }
+            .nav-toggle {
+                display: none;
+                background: none;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 6px 10px;
+                cursor: pointer;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .nav-toggle span {
+                display: block;
+                width: 20px;
+                height: 2px;
+                background: var(--sage);
+                border-radius: 2px;
+                transition: 0.3s;
+            }
+            @media (max-width: 768px) {
+                .nav-links {
+                    display: none;
+                    position: absolute;
+                    top: 72px;
+                    left: 0;
+                    right: 0;
+                    background: rgba(26, 26, 15, 0.97);
+                    border-bottom: 1px solid var(--border);
+                    flex-direction: column;
+                    padding: 1.5rem 2rem;
+                    gap: 1.5rem;
+                }
+                .nav-links.open {
+                    display: flex;
+                }
+                .nav-toggle {
+                    display: flex;
+                }
+            }
+
+            /* ===== MAIN ===== */
+            main {
+                position: relative;
+                z-index: 1;
+                padding-top: 72px;
+            }
+
+            /* ===== HERO ===== */
+            .guide-hero {
+                padding: 6rem 1.5rem 5rem;
+                text-align: center;
+                position: relative;
+            }
+            .guide-hero::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 1px;
+                height: 60px;
+                background: linear-gradient(
+                    to bottom,
+                    var(--border),
+                    transparent
+                );
+            }
+            .eyebrow {
+                font-size: 0.68rem;
+                letter-spacing: 0.45em;
+                text-transform: uppercase;
+                color: var(--gold);
+                margin-bottom: 1.2rem;
+                opacity: 0;
+                animation: fadeUp 0.8s 0.1s ease forwards;
+            }
+            .page-title {
+                font-family: "Cinzel", serif;
+                font-size: clamp(2.8rem, 7vw, 5.5rem);
+                font-weight: 900;
+                line-height: 1;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                margin-bottom: 1.5rem;
+                opacity: 0;
+                animation: fadeUp 0.8s 0.25s ease forwards;
+            }
+            .page-title span {
+                background: linear-gradient(
+                    135deg,
+                    var(--sage) 0%,
+                    var(--gold-light) 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .hero-intro {
+                max-width: 580px;
+                margin: 0 auto;
+                font-size: 1.05rem;
+                font-weight: 300;
+                color: rgba(240, 237, 228, 0.55);
+                line-height: 1.85;
+                letter-spacing: 0.02em;
+                opacity: 0;
+                animation: fadeUp 0.8s 0.4s ease forwards;
+            }
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(24px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* ===== CONTENT WRAP ===== */
+            .content-wrap {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 0 1.5rem 8rem;
+            }
+
+            /* ===== SECTION ===== */
+            .section {
+                margin-bottom: 5rem;
+                opacity: 0;
+                transform: translateY(32px);
+                transition:
+                    opacity 0.7s ease,
+                    transform 0.7s ease;
+            }
+            .section.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .section-label {
+                font-size: 0.65rem;
+                letter-spacing: 0.4em;
+                text-transform: uppercase;
+                color: var(--gold);
+                margin-bottom: 1.2rem;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+            }
+            .section-label::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    var(--border-gold),
+                    transparent
+                );
+            }
+            .section-title {
+                font-family: "Cinzel", serif;
+                font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                margin-bottom: 2.5rem;
+                line-height: 1.2;
+            }
+
+            /* ===== DIVIDER ===== */
+            .ruled {
+                height: 1px;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    var(--border),
+                    transparent
+                );
+                margin: 4rem 0;
+            }
+
+            /* ===== STEP CARDS ===== */
+            .step-card {
+                background: var(--card-bg);
+                border: 1px solid var(--border);
+                border-radius: 20px;
+                padding: 2.5rem 2rem;
+                backdrop-filter: blur(12px);
+                margin-bottom: 1.8rem;
+                display: grid;
+                grid-template-columns: 1fr 1.4fr;
+                gap: 2.5rem;
+                align-items: center;
+                transition:
+                    border-color 0.3s,
+                    transform 0.3s;
+                opacity: 0;
+                transform: translateY(28px);
+                transition:
+                    opacity 0.65s ease,
+                    transform 0.65s ease,
+                    border-color 0.3s;
+            }
+            .step-card.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .step-card:hover {
+                border-color: rgba(138, 184, 112, 0.4);
+            }
+
+            /* Alternate: even steps flip image to left */
+            .step-card.reverse {
+                direction: rtl;
+            }
+            .step-card.reverse > * {
+                direction: ltr;
+            }
+
+            /* ===== STEP TEXT SIDE ===== */
+            .step-text {
+                display: flex;
+                flex-direction: column;
+                gap: 0.9rem;
+            }
+
+            .step-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                width: fit-content;
+                padding: 0.3rem 0.9rem 0.3rem 0.5rem;
+                border-radius: 50px;
+                border: 1px solid var(--border-gold);
+                background: rgba(200, 168, 75, 0.07);
+            }
+            .step-badge-num {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                background: rgba(200, 168, 75, 0.15);
+                border: 1px solid rgba(200, 168, 75, 0.35);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: "Cinzel", serif;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: var(--gold-light);
+                flex-shrink: 0;
+            }
+            .step-badge-label {
+                font-size: 0.68rem;
+                letter-spacing: 0.25em;
+                text-transform: uppercase;
+                color: var(--gold);
+                font-weight: 400;
+            }
+
+            .step-title {
+                font-family: "Cinzel", serif;
+                font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                line-height: 1.25;
+            }
+
+            .step-desc {
+                font-size: 0.9rem;
+                font-weight: 300;
+                color: rgba(240, 237, 228, 0.55);
+                line-height: 1.8;
+                letter-spacing: 0.015em;
+            }
+
+            .step-tip {
+                display: flex;
+                align-items: flex-start;
+                gap: 0.6rem;
+                background: rgba(61, 92, 46, 0.12);
+                border: 1px solid rgba(138, 184, 112, 0.15);
+                border-left: 2px solid var(--sage);
+                border-radius: 0 10px 10px 0;
+                padding: 0.7rem 0.9rem;
+                font-size: 0.8rem;
+                color: rgba(196, 221, 178, 0.7);
+                line-height: 1.55;
+            }
+            .step-tip-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--sage);
+                margin-top: 5px;
+                flex-shrink: 0;
+            }
+
+            /* ===== STEP IMAGE SIDE ===== */
+            .step-img-wrap {
+                border-radius: 12px;
+                overflow: hidden;
+                aspect-ratio: 16 / 10;
+            }
+            .step-img-wrap img {
+                width: 100%;
+                height: 100%;
+                border: 1px solid rgba(196, 221, 178, 0.7);
+                object-fit: cover;
+                display: block;
+                border-radius: 12px;
+            }
+
+            /* ===== RESPONSIVE ===== */
+            @media (max-width: 760px) {
+                .step-card {
+                    grid-template-columns: 1fr;
+                    padding: 2rem 1.4rem;
+                    gap: 1.6rem;
+                }
+                .step-card.reverse {
+                    direction: ltr;
+                }
+            }
+
+            /* ===== QUICK TIPS SECTION ===== */
+            .tips-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+            .tip-card {
+                background: rgba(61, 92, 46, 0.12);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.5rem 1.4rem;
+                transition:
+                    border-color 0.3s,
+                    transform 0.3s;
+            }
+            .tip-card:hover {
+                border-color: rgba(138, 184, 112, 0.4);
+                transform: translateY(-3px);
+            }
+            .tip-icon {
+                width: 38px;
+                height: 38px;
+                background: rgba(90, 138, 63, 0.15);
+                border: 1px solid rgba(90, 138, 63, 0.25);
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 0.9rem;
+            }
+            .tip-icon svg {
+                width: 18px;
+                height: 18px;
+                stroke: var(--sage);
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .tip-title {
+                font-family: "Cinzel", serif;
+                font-size: 0.9rem;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                margin-bottom: 0.5rem;
+            }
+            .tip-text {
+                font-size: 0.82rem;
+                color: rgba(240, 237, 228, 0.5);
+                line-height: 1.7;
+            }
+
+            /* ===== FOOTER ===== */
+            footer {
+                position: relative;
+                z-index: 1;
+                border-top: 1px solid var(--border);
+                padding: 2rem 1.5rem;
+                text-align: center;
+            }
+            .footer-logo {
+                font-family: "Cinzel", serif;
+                font-size: 1rem;
+                font-weight: 700;
+                letter-spacing: 0.2em;
+                color: rgba(240, 237, 228, 0.3);
+                margin-bottom: 0.5rem;
+            }
+            .footer-copy {
+                font-size: 0.72rem;
+                letter-spacing: 0.08em;
+                color: rgba(240, 237, 228, 0.25);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="bg-canvas"></div>
+        <div class="grain"></div>
+
+        <!-- Navbar -->
+        <nav>
+            <a class="nav-logo" href="/">
+                <div class="logo-mark">
+                    <svg
+                        viewBox="0 0 40 40"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="20"
+                            cy="20"
+                            r="18"
+                            stroke="rgba(138,184,112,0.3)"
+                            stroke-width="1"
+                        />
+                        <path
+                            d="M20 6 C20 6, 28 12, 28 20 C28 28, 20 34, 20 34 C20 34, 12 28, 12 20 C12 12, 20 6, 20 6Z"
+                            fill="rgba(90,138,63,0.25)"
+                            stroke="var(--sage)"
+                            stroke-width="1.2"
+                        />
+                        <path
+                            d="M6 20 C6 20, 12 14, 20 14 C28 14, 34 20, 34 20"
+                            stroke="var(--gold)"
+                            stroke-width="1"
+                            stroke-linecap="round"
+                            opacity="0.7"
+                        />
+                        <circle cx="20" cy="20" r="3" fill="var(--sage)" />
+                        <circle cx="20" cy="20" r="1.2" fill="var(--gold)" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="logo-text">REGAIA</span>
+                    <span class="logo-sub">Trash Smarter, Live Better</span>
+                </div>
+            </a>
+            <button
+                class="nav-toggle"
+                id="navToggle"
+                aria-label="Toggle navigation"
+            >
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/team">Team</a></li>
+                <li><a href="#" class="active">User Guide</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Hero -->
+            <div class="guide-hero">
+                <p class="eyebrow">Step-by-Step Walkthrough</p>
+                <h1 class="page-title">How to Use <span>REGAIA</span></h1>
+                <p class="hero-intro">
+                    Classify any waste item in seconds — upload a photo and let
+                    the AI do the rest. Follow the five steps below to get
+                    started.
+                </p>
+            </div>
+
+            <div class="content-wrap">
+                <!-- Steps section -->
+                <div class="section" id="s1">
+                    <p class="section-label">The Process</p>
+                    <h2 class="section-title">Five Steps to Classification</h2>
+
+                    <!-- Step 1 -->
+                    <div class="step-card" id="step1">
+                        <div class="step-text">
+                            <div class="step-badge">
+                                <div class="step-badge-num">1</div>
+                                <span class="step-badge-label">Step One</span>
+                            </div>
+                            <h3 class="step-title">Open the Homepage</h3>
+                            <p class="step-desc">
+                                Navigate to the REGAIA homepage. You'll be
+                                greeted by the main upload interface — a clean,
+                                centred panel where you can drag and drop a
+                                waste image or browse your device for a file.
+                            </p>
+                            <div class="step-tip">
+                                <span class="step-tip-dot"></span>
+                                Make sure you have a clear, well-lit photo of
+                                the waste item ready before you begin.
+                            </div>
+                        </div>
+                        <div class="step-img-wrap">
+                            <img
+                                src="/static/images/step1.png"
+                                alt="Screenshot of REGAIA homepage upload panel"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-card reverse" id="step2">
+                        <div class="step-text">
+                            <div class="step-badge">
+                                <div class="step-badge-num">2</div>
+                                <span class="step-badge-label">Step Two</span>
+                            </div>
+                            <h3 class="step-title">Upload Your Waste Image</h3>
+                            <p class="step-desc">
+                                Drag and drop your image directly into the
+                                upload area, or click the browse button to
+                                select a file from your device. The system
+                                accepts common image formats and supports files
+                                up to 10 MB.
+                            </p>
+                            <div class="step-tip">
+                                <span class="step-tip-dot"></span>
+                                Use JPG, PNG, or WEBP formats for best results.
+                                Keep the waste item centred in the frame.
+                            </div>
+                        </div>
+                        <div class="step-img-wrap">
+                            <img
+                                src="/static/images/step2.png"
+                                alt="Screenshot of image upload interaction"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-card" id="step3">
+                        <div class="step-text">
+                            <div class="step-badge">
+                                <div class="step-badge-num">3</div>
+                                <span class="step-badge-label">Step Three</span>
+                            </div>
+                            <h3 class="step-title">Preview the Image</h3>
+                            <p class="step-desc">
+                                Once selected, a preview of your uploaded image
+                                will appear on screen. Take a moment to confirm
+                                the image is clear, correctly framed, and shows
+                                the waste item you intend to classify before
+                                moving on.
+                            </p>
+                            <div class="step-tip">
+                                <span class="step-tip-dot"></span>
+                                If the image looks blurry or cropped
+                                incorrectly, click the upload area again to
+                                choose a different file.
+                            </div>
+                        </div>
+                        <div class="step-img-wrap">
+                            <img
+                                src="/static/images/step3.png"
+                                alt="Screenshot of image preview display"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-card reverse" id="step4">
+                        <div class="step-text">
+                            <div class="step-badge">
+                                <div class="step-badge-num">4</div>
+                                <span class="step-badge-label">Step Four</span>
+                            </div>
+                            <h3 class="step-title">Click Predict</h3>
+                            <p class="step-desc">
+                                Press the Predict button to submit the image to
+                                the AI model. A scanning animation and loading
+                                indicator will appear while the system analyses
+                                the visual features of your image against its
+                                trained categories.
+                            </p>
+                            <div class="step-tip">
+                                <span class="step-tip-dot"></span>
+                                Processing typically completes in just a few
+                                seconds depending on your connection speed.
+                            </div>
+                        </div>
+                        <div class="step-img-wrap">
+                            <img
+                                src="/static/images/step4.png"
+                                alt="Screenshot of predict button and loading state"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="step-card" id="step5">
+                        <div class="step-text">
+                            <div class="step-badge">
+                                <div class="step-badge-num">5</div>
+                                <span class="step-badge-label">Step Five</span>
+                            </div>
+                            <h3 class="step-title">View Your Result</h3>
+                            <p class="step-desc">
+                                The AI returns the predicted waste category
+                                along with a confidence score shown as a
+                                progress bar. The higher the confidence, the
+                                more certain the model is about its
+                                classification — use this to guide your
+                                recycling decision.
+                            </p>
+                            <div class="step-tip">
+                                <span class="step-tip-dot"></span>
+                                Categories include cardboard, glass, metal,
+                                paper, plastic, and general trash. If confidence
+                                is low, try a clearer photo.
+                            </div>
+                        </div>
+                        <div class="step-img-wrap">
+                            <img
+                                src="/static/images/step5.png"
+                                alt="Screenshot of classification result and confidence score"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ruled"></div>
+
+                <!-- Tips section -->
+                <div class="section" id="s2">
+                    <p class="section-label">Best Practices</p>
+                    <h2 class="section-title">Tips for Better Results</h2>
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path
+                                        d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                                    />
+                                </svg>
+                            </div>
+                            <p class="tip-title">Good Lighting</p>
+                            <p class="tip-text">
+                                Take photos in natural daylight or a well-lit
+                                space. Shadows and dim lighting reduce the
+                                model's ability to distinguish material types
+                                accurately.
+                            </p>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                                    />
+                                </svg>
+                            </div>
+                            <p class="tip-title">Single Item Focus</p>
+                            <p class="tip-text">
+                                Centre one waste item per photo. Mixed or
+                                cluttered scenes may confuse the classifier —
+                                isolating the item gives the best confidence
+                                scores.
+                            </p>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <rect
+                                        x="3"
+                                        y="3"
+                                        width="18"
+                                        height="18"
+                                        rx="2"
+                                    />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                            </div>
+                            <p class="tip-title">Sharp &amp; Clear</p>
+                            <p class="tip-text">
+                                Avoid blurry or motion-blurred images. Hold your
+                                device steady and ensure the item is fully in
+                                frame with no important parts cut off.
+                            </p>
+                        </div>
+
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="1 4 1 10 7 10" />
+                                    <path d="M3.51 15a9 9 0 1 0 .49-3.5" />
+                                </svg>
+                            </div>
+                            <p class="tip-title">Retry if Uncertain</p>
+                            <p class="tip-text">
+                                A low confidence score means the model is
+                                unsure. Try a different angle, better lighting,
+                                or crop the image closer to the item and predict
+                                again.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p class="footer-logo">REGAIA</p>
+            <p class="footer-copy">
+                &copy; <span id="year"></span> REGAIA — Trash Smarter, Live
+                Better. All rights reserved.
+            </p>
+        </footer>
+
+        <script>
+            document.getElementById("year").textContent =
+                new Date().getFullYear();
+
+            document
+                .getElementById("navToggle")
+                .addEventListener("click", () => {
+                    document
+                        .getElementById("navLinks")
+                        .classList.toggle("open");
+                });
+
+            // Scroll reveal for section blocks
+            const sections = document.querySelectorAll(".section");
+            const secObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting)
+                            entry.target.classList.add("visible");
+                    });
+                },
+                { threshold: 0.06 },
+            );
+            sections.forEach((s) => secObserver.observe(s));
+
+            // Scroll reveal for individual step cards (staggered)
+            const stepCards = document.querySelectorAll(".step-card");
+            const cardObserver = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry, i) => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.transitionDelay = "0.05s";
+                            entry.target.classList.add("visible");
+                        }
+                    });
+                },
+                { threshold: 0.1 },
+            );
+            stepCards.forEach((c) => cardObserver.observe(c));
+        </script>
+    </body>
+</html>

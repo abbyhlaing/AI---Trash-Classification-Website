@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OUR TEAM — REGAIA</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --earth: #1a1a0f;
+                --bark: #2b2b1a;
+                --moss: #3d5c2e;
+                --leaf: #5a8a3f;
+                --sage: #8ab870;
+                --mist: #c4ddb2;
+                --cream: #f0ede4;
+                --gold: #c8a84b;
+                --gold-light: #e4cb7a;
+                --card-bg: rgba(26, 26, 15, 0.85);
+                --border: rgba(138, 184, 112, 0.2);
+                --border-gold: rgba(200, 168, 75, 0.2);
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                background-color: var(--earth);
+                color: var(--cream);
+                font-family: "DM Sans", sans-serif;
+                font-weight: 300;
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+
+            /* ===== BACKGROUND ===== */
+            .bg-canvas {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                pointer-events: none;
+                overflow: hidden;
+            }
+            .bg-canvas::before {
+                content: "";
+                position: absolute;
+                inset: -50%;
+                background:
+                    radial-gradient(
+                        ellipse 55% 45% at 15% 25%,
+                        rgba(61, 92, 46, 0.3) 0%,
+                        transparent 60%
+                    ),
+                    radial-gradient(
+                        ellipse 45% 55% at 85% 75%,
+                        rgba(90, 138, 63, 0.15) 0%,
+                        transparent 55%
+                    ),
+                    radial-gradient(
+                        ellipse 35% 35% at 60% 5%,
+                        rgba(200, 168, 75, 0.06) 0%,
+                        transparent 50%
+                    );
+                animation: bgPulse 14s ease-in-out infinite alternate;
+            }
+            @keyframes bgPulse {
+                0% {
+                    transform: scale(1) rotate(0deg);
+                    opacity: 0.7;
+                }
+                100% {
+                    transform: scale(1.06) rotate(0.8deg);
+                    opacity: 1;
+                }
+            }
+            .grain {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                pointer-events: none;
+                opacity: 0.022;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+                background-size: 128px;
+            }
+
+            /* ===== NAVBAR ===== */
+            nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                padding: 0 2rem;
+                height: 72px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(26, 26, 15, 0.75);
+                backdrop-filter: blur(20px) saturate(1.5);
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+            }
+            .logo-mark {
+                width: 36px;
+                height: 36px;
+            }
+            .logo-mark svg {
+                width: 100%;
+                height: 100%;
+            }
+            .logo-text {
+                font-family: "Cinzel", serif;
+                font-size: 1.4rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                color: var(--cream);
+                line-height: 1;
+            }
+            .logo-sub {
+                font-family: "DM Sans", sans-serif;
+                font-size: 0.55rem;
+                font-weight: 300;
+                letter-spacing: 0.25em;
+                color: var(--sage);
+                text-transform: uppercase;
+                line-height: 1;
+                display: block;
+                margin-top: 2px;
+            }
+            .nav-links {
+                display: flex;
+                gap: 2.5rem;
+                list-style: none;
+            }
+            .nav-links a {
+                font-size: 0.8rem;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: rgba(240, 237, 228, 0.6);
+                text-decoration: none;
+                transition: color 0.2s;
+                font-weight: 400;
+            }
+            .nav-links a:hover,
+            .nav-links a.active {
+                color: var(--sage);
+            }
+            .nav-toggle {
+                display: none;
+                background: none;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 6px 10px;
+                cursor: pointer;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .nav-toggle span {
+                display: block;
+                width: 20px;
+                height: 2px;
+                background: var(--sage);
+                border-radius: 2px;
+                transition: 0.3s;
+            }
+            @media (max-width: 768px) {
+                .nav-links {
+                    display: none;
+                    position: absolute;
+                    top: 72px;
+                    left: 0;
+                    right: 0;
+                    background: rgba(26, 26, 15, 0.97);
+                    border-bottom: 1px solid var(--border);
+                    flex-direction: column;
+                    padding: 1.5rem 2rem;
+                    gap: 1.5rem;
+                }
+                .nav-links.open {
+                    display: flex;
+                }
+                .nav-toggle {
+                    display: flex;
+                }
+            }
+
+            /* ===== PAGE WRAPPER ===== */
+            main {
+                position: relative;
+                z-index: 1;
+                padding-top: 72px;
+            }
+
+            /* ===== HERO BANNER ===== */
+            .team-hero {
+                padding: 6rem 1.5rem 5rem;
+                text-align: center;
+                position: relative;
+            }
+            .team-hero::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 1px;
+                height: 60px;
+                background: linear-gradient(
+                    to bottom,
+                    var(--border),
+                    transparent
+                );
+            }
+            .eyebrow {
+                font-size: 0.68rem;
+                letter-spacing: 0.45em;
+                text-transform: uppercase;
+                color: var(--gold);
+                margin-bottom: 1.2rem;
+                opacity: 0;
+                animation: fadeUp 0.8s 0.1s ease forwards;
+            }
+            .page-title {
+                font-family: "Cinzel", serif;
+                font-size: clamp(2.8rem, 7vw, 5.5rem);
+                font-weight: 900;
+                line-height: 1;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                margin-bottom: 1.5rem;
+                opacity: 0;
+                animation: fadeUp 0.8s 0.25s ease forwards;
+            }
+            .page-title span {
+                background: linear-gradient(
+                    135deg,
+                    var(--sage) 0%,
+                    var(--gold-light) 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .hero-intro {
+                max-width: 600px;
+                margin: 0 auto;
+                font-size: 1.05rem;
+                font-weight: 300;
+                color: rgba(240, 237, 228, 0.55);
+                line-height: 1.85;
+                letter-spacing: 0.02em;
+                opacity: 0;
+                animation: fadeUp 0.8s 0.4s ease forwards;
+            }
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(24px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* ===== CONTENT WRAP ===== */
+            .content-wrap {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 1.5rem 8rem;
+            }
+
+            /* ===== SECTION ===== */
+            .section {
+                margin-bottom: 5rem;
+                opacity: 0;
+                transform: translateY(32px);
+                transition:
+                    opacity 0.7s ease,
+                    transform 0.7s ease;
+            }
+            .section.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .section-label {
+                font-size: 0.65rem;
+                letter-spacing: 0.4em;
+                text-transform: uppercase;
+                color: var(--gold);
+                margin-bottom: 1.2rem;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+            }
+            .section-label::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    var(--border-gold),
+                    transparent
+                );
+            }
+            .section-title {
+                font-family: "Cinzel", serif;
+                font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                margin-bottom: 2.5rem;
+                line-height: 1.2;
+            }
+
+            /* ===== RULED DIVIDER ===== */
+            .ruled {
+                border: none;
+                border-top: 1px solid var(--border);
+                margin: 4rem 0;
+            }
+
+            /* ===== TEAM GRID ===== */
+            /* Top row: 3 cards */
+            .team-row-top {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.4rem;
+                margin-bottom: 1.4rem;
+            }
+            /* Bottom row: 2 cards centred */
+            .team-row-bottom {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.4rem;
+                max-width: calc(66.66% + 1.4rem / 3 * 2);
+                margin: 0 auto;
+            }
+
+            @media (max-width: 900px) {
+                .team-row-top {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .team-row-bottom {
+                    grid-template-columns: repeat(2, 1fr);
+                    max-width: 100%;
+                }
+            }
+            @media (max-width: 560px) {
+                .team-row-top,
+                .team-row-bottom {
+                    grid-template-columns: 1fr;
+                    max-width: 100%;
+                }
+            }
+
+            /* ===== TEAM CARD ===== */
+            .team-card {
+                background: var(--card-bg);
+                border: 1px solid var(--border);
+                border-radius: 20px;
+                padding: 2rem 1.6rem 1.8rem;
+                backdrop-filter: blur(12px);
+                transition:
+                    border-color 0.3s,
+                    transform 0.3s;
+                display: flex;
+                flex-direction: column;
+            }
+            .team-card:hover {
+                border-color: rgba(138, 184, 112, 0.45);
+                transform: translateY(-4px);
+            }
+
+            .card-avatar {
+                width: 88px;
+                height: 88px;
+                border-radius: 50%;
+                border: 2px solid rgba(138, 184, 112, 0.35);
+                background: rgba(61, 92, 46, 0.25);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: "Cinzel", serif;
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: var(--sage);
+                margin-bottom: 1.2rem;
+                flex-shrink: 0;
+                letter-spacing: 0.06em;
+                overflow: hidden;
+            }
+            .card-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            }
+
+            .card-role-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 0.28rem 0.8rem;
+                border-radius: 50px;
+                font-size: 0.7rem;
+                font-weight: 400;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                border: 1px solid rgba(200, 168, 75, 0.25);
+                background: rgba(200, 168, 75, 0.07);
+                color: var(--gold-light);
+                margin-bottom: 0.9rem;
+                width: fit-content;
+            }
+            .card-role-dot {
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background: var(--gold);
+                flex-shrink: 0;
+            }
+
+            .card-name {
+                font-family: "Cinzel", serif;
+                font-size: 1.05rem;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                color: var(--cream);
+                margin-bottom: 1rem;
+                line-height: 1.2;
+            }
+
+            .card-divider {
+                border: none;
+                border-top: 1px solid var(--border);
+                margin-bottom: 1rem;
+            }
+
+            .card-desc {
+                font-size: 0.85rem;
+                font-weight: 300;
+                color: rgba(240, 237, 228, 0.52);
+                line-height: 1.75;
+                letter-spacing: 0.015em;
+                flex: 1;
+            }
+
+            /* ===== FOOTER ===== */
+            footer {
+                position: relative;
+                z-index: 1;
+                border-top: 1px solid var(--border);
+                padding: 2rem 1.5rem;
+                text-align: center;
+            }
+            .footer-logo {
+                font-family: "Cinzel", serif;
+                font-size: 1rem;
+                font-weight: 700;
+                letter-spacing: 0.2em;
+                color: rgba(240, 237, 228, 0.3);
+                margin-bottom: 0.5rem;
+            }
+            .footer-copy {
+                font-size: 0.72rem;
+                letter-spacing: 0.08em;
+                color: rgba(240, 237, 228, 0.25);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="bg-canvas"></div>
+        <div class="grain"></div>
+
+        <!-- Navbar -->
+        <nav>
+            <a class="nav-logo" href="/">
+                <div class="logo-mark">
+                    <svg
+                        viewBox="0 0 40 40"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="20"
+                            cy="20"
+                            r="18"
+                            stroke="rgba(138,184,112,0.3)"
+                            stroke-width="1"
+                        />
+                        <path
+                            d="M20 6 C20 6, 28 12, 28 20 C28 28, 20 34, 20 34 C20 34, 12 28, 12 20 C12 12, 20 6, 20 6Z"
+                            fill="rgba(90,138,63,0.25)"
+                            stroke="var(--sage)"
+                            stroke-width="1.2"
+                        />
+                        <path
+                            d="M6 20 C6 20, 12 14, 20 14 C28 14, 34 20, 34 20"
+                            stroke="var(--gold)"
+                            stroke-width="1"
+                            stroke-linecap="round"
+                            opacity="0.7"
+                        />
+                        <circle cx="20" cy="20" r="3" fill="var(--sage)" />
+                        <circle cx="20" cy="20" r="1.2" fill="var(--gold)" />
+                    </svg>
+                </div>
+                <div>
+                    <span class="logo-text">REGAIA</span>
+                    <span class="logo-sub">Trash Smarter, Live Better</span>
+                </div>
+            </a>
+            <button
+                class="nav-toggle"
+                id="navToggle"
+                aria-label="Toggle navigation"
+            >
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="#" class="active">Team</a></li>
+                <li><a href="/user-guide">User Guide</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Hero -->
+            <div class="team-hero">
+                <p class="eyebrow">The People Behind the Project</p>
+                <h1 class="page-title">Meet Our <span>Team</span></h1>
+                <p class="hero-intro">
+                    Five engineers and analysts working together to bring
+                    intelligent waste classification to life — from raw datasets
+                    to a finished, deployable system.
+                </p>
+            </div>
+
+            <div class="content-wrap">
+                <div class="section" id="s1">
+                    <p class="section-label">Core Contributors</p>
+                    <h2 class="section-title">The Minds Behind REGAIA</h2>
+
+                    <!-- Top row: 3 cards -->
+                    <div class="team-row-top">
+                        <!-- Han Pyae Tun -->
+                        <div class="team-card">
+                            <div class="card-avatar">
+                                <img
+                                    src="https://ui-avatars.com/api/?name=Han+Pyae+Tun&background=3d5c2e&color=c4ddb2&size=88&font-size=0.35&bold=true"
+                                    alt="Han Pyae Tun"
+                                />
+                            </div>
+                            <div class="card-role-tag">
+                                <span class="card-role-dot"></span>AI &amp;
+                                Machine Learning
+                            </div>
+                            <h3 class="card-name">Han Pyae Tun</h3>
+                            <hr class="card-divider" />
+                            <p class="card-desc">
+                                He led the architectural design and
+                                implementation of the entire AI pipeline. He
+                                selected the CNN model architecture for image
+                                classification, defined end-to-end workflows,
+                                handled data preprocessing, and drove the model
+                                training process — ensuring the system's
+                                intelligence was built on a rigorous,
+                                well-engineered foundation.
+                            </p>
+                        </div>
+
+                        <!-- Shin Myat Noe Zin -->
+                        <div class="team-card">
+                            <div class="card-avatar">
+                                <img
+                                    src="https://ui-avatars.com/api/?name=Shin+Myat+Noe+Zin&background=3d5c2e&color=c4ddb2&size=88&font-size=0.35&bold=true"
+                                    alt="Shin Myat Noe Zin"
+                                />
+                            </div>
+                            <div class="card-role-tag">
+                                <span class="card-role-dot"></span>Dataset
+                                Engineering
+                            </div>
+                            <h3 class="card-name">Shin Myat Noe Zin</h3>
+                            <hr class="card-divider" />
+                            <p class="card-desc">
+                                She curated the diverse dataset of waste images
+                                that underpins the model's performance. She
+                                oversaw data collection, maintained data quality
+                                standards, balanced class distribution across
+                                categories, and prepared the final dataset
+                                splits for training and testing — giving the
+                                model the varied, reliable input it needed to
+                                generalise well.
+                            </p>
+                        </div>
+
+                        <!-- Lin Wai Yan -->
+                        <div class="team-card">
+                            <div class="card-avatar">
+                                <img
+                                    src="https://ui-avatars.com/api/?name=Lin+Wai+Yan&background=3d5c2e&color=c4ddb2&size=88&font-size=0.35&bold=true"
+                                    alt="Lin Wai Yan"
+                                />
+                            </div>
+                            <div class="card-role-tag">
+                                <span class="card-role-dot"></span>Web
+                                Development
+                            </div>
+                            <h3 class="card-name">Lin Wai Yan</h3>
+                            <hr class="card-divider" />
+                            <p class="card-desc">
+                                He built the user-facing layer of the system
+                                from the ground up. He designed and developed a
+                                fully responsive web interface that lets users
+                                upload waste images and receive instant
+                                classification results. His work prioritised
+                                smooth interaction, accessibility, and clean
+                                integration with the backend inference services.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bottom row: 2 cards centred -->
+                    <div class="team-row-bottom">
+                        <!-- Yu Nandar Hlaing -->
+                        <div class="team-card">
+                            <div class="card-avatar">
+                                <img
+                                    src="https://ui-avatars.com/api/?name=Yu+Nandar+Hlaing&background=3d5c2e&color=c4ddb2&size=88&font-size=0.35&bold=true"
+                                    alt="Yu Nandar Hlaing"
+                                />
+                            </div>
+                            <div class="card-role-tag">
+                                <span class="card-role-dot"></span>Integration
+                                &amp; Testing
+                            </div>
+                            <h3 class="card-name">Yu Nandar Hlaing</h3>
+                            <hr class="card-divider" />
+                            <p class="card-desc">
+                                She focused on bringing all system components
+                                together into a cohesive, working whole. She
+                                conducted comprehensive system testing, tracked
+                                down and resolved bugs, and validated model
+                                outputs through the interface. She also
+                                contributed to hyperparameter tuning and
+                                evaluated key performance metrics such as
+                                accuracy and precision to ensure the system met
+                                quality targets.
+                            </p>
+                        </div>
+
+                        <!-- Thant Htoo San -->
+                        <div class="team-card">
+                            <div class="card-avatar">
+                                <img
+                                    src="https://ui-avatars.com/api/?name=Thant+Htoo+San&background=3d5c2e&color=c4ddb2&size=88&font-size=0.35&bold=true"
+                                    alt="Thant Htoo San"
+                                />
+                            </div>
+                            <div class="card-role-tag">
+                                <span class="card-role-dot"></span>Evaluation
+                                &amp; Documentation
+                            </div>
+                            <h3 class="card-name">Thant Htoo San</h3>
+                            <hr class="card-divider" />
+                            <p class="card-desc">
+                                He was responsible for assessing the system's
+                                overall performance and capturing the project in
+                                writing. He produced detailed reports on model
+                                accuracy, usability findings, and known
+                                limitations. Alongside this, he authored the
+                                technical documentation, user guides, and final
+                                project reports — ensuring the work remains
+                                clear, reproducible, and accessible to future
+                                contributors.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="ruled" />
+
+                <!-- Roles summary section -->
+                <div class="section" id="s2">
+                    <p class="section-label">Responsibilities at a Glance</p>
+                    <h2 class="section-title">How the Work Was Divided</h2>
+                    <div
+                        style="
+                            display: grid;
+                            grid-template-columns: repeat(
+                                auto-fit,
+                                minmax(260px, 1fr)
+                            );
+                            gap: 1rem;
+                        "
+                    >
+                        <div
+                            style="
+                                background: rgba(61, 92, 46, 0.12);
+                                border: 1px solid var(--border);
+                                border-radius: 16px;
+                                padding: 1.5rem;
+                            "
+                        >
+                            <p
+                                style="
+                                    font-size: 0.65rem;
+                                    letter-spacing: 0.3em;
+                                    text-transform: uppercase;
+                                    color: var(--gold);
+                                    margin-bottom: 0.8rem;
+                                "
+                            >
+                                Model &amp; Data
+                            </p>
+                            <p
+                                style="
+                                    font-size: 0.88rem;
+                                    color: rgba(240, 237, 228, 0.55);
+                                    line-height: 1.75;
+                                "
+                            >
+                                Han Pyae Tun designed the neural network
+                                architecture and training strategy, while Shin
+                                Myat Noe Zin sourced and curated the dataset —
+                                together forming the core AI engine.
+                            </p>
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(61, 92, 46, 0.12);
+                                border: 1px solid var(--border);
+                                border-radius: 16px;
+                                padding: 1.5rem;
+                            "
+                        >
+                            <p
+                                style="
+                                    font-size: 0.65rem;
+                                    letter-spacing: 0.3em;
+                                    text-transform: uppercase;
+                                    color: var(--gold);
+                                    margin-bottom: 0.8rem;
+                                "
+                            >
+                                Interface &amp; Integration
+                            </p>
+                            <p
+                                style="
+                                    font-size: 0.88rem;
+                                    color: rgba(240, 237, 228, 0.55);
+                                    line-height: 1.75;
+                                "
+                            >
+                                Lin Wai Yan built the responsive frontend and
+                                connected every layer of the stack, while Yu
+                                Nandar Haling handled the overall testing phase
+                                — making sure the model, backend, and UI all
+                                worked seamlessly as one.
+                            </p>
+                        </div>
+
+                        <div
+                            style="
+                                background: rgba(61, 92, 46, 0.12);
+                                border: 1px solid var(--border);
+                                border-radius: 16px;
+                                padding: 1.5rem;
+                            "
+                        >
+                            <p
+                                style="
+                                    font-size: 0.65rem;
+                                    letter-spacing: 0.3em;
+                                    text-transform: uppercase;
+                                    color: var(--gold);
+                                    margin-bottom: 0.8rem;
+                                "
+                            >
+                                Quality &amp; Knowledge
+                            </p>
+                            <p
+                                style="
+                                    font-size: 0.88rem;
+                                    color: rgba(240, 237, 228, 0.55);
+                                    line-height: 1.75;
+                                "
+                            >
+                                Thant Htoo San evaluated system performance and
+                                translated the entire project into clear
+                                documentation — from technical specs to user
+                                guides — preserving the team's work for the
+                                future.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p class="footer-logo">REGAIA</p>
+            <p class="footer-copy">
+                &copy; <span id="year"></span> REGAIA — Trash Smarter, Live
+                Better. All rights reserved.
+            </p>
+        </footer>
+
+        <script>
+            document.getElementById("year").textContent =
+                new Date().getFullYear();
+
+            document
+                .getElementById("navToggle")
+                .addEventListener("click", () => {
+                    document
+                        .getElementById("navLinks")
+                        .classList.toggle("open");
+                });
+
+            const sections = document.querySelectorAll(".section");
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("visible");
+                            const cards =
+                                entry.target.querySelectorAll(".team-card");
+                            cards.forEach((card, i) => {
+                                card.style.transitionDelay = `${i * 0.08}s`;
+                            });
+                        }
+                    });
+                },
+                { threshold: 0.06 },
+            );
+
+            sections.forEach((s) => observer.observe(s));
+        </script>
+    </body>
+</html>
