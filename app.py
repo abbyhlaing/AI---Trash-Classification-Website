@@ -23,6 +23,7 @@ model.eval()
 
 yolo = YOLO("yolov8n.pt")
 
+
 class_names = ["cardboard", "glass", "metal", "paper", "plastic", "trash"]
 
 # ✅ Transform
