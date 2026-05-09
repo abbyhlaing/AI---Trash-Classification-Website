@@ -147,6 +147,13 @@ http://127.0.0.1:5000
 
 ---
 
+### Development Environment
+- Google Colab
+- Jupyter Notebook
+- VS Code
+
+---
+
 ## Author
 @abbyhlaing
 
