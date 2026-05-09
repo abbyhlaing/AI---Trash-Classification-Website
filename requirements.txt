@@ -1,8 +1,31 @@
-flask
-gunicorn
-torch
-torchvision
-pillow
-opencv-python-headless
-numpy
-ultralytics
+# Recommended Environment
+# Developed and tested using Google Colab and Jupyter Notebook
+
+# Deep Learning & AI
+torch>=2.0.0,<3.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Computer Vision
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Data Processing
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+scikit-learn>=1.3.0
+
+# Backend
+flask>=2.3.0
+
+# Visualisation
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Utilities
+tqdm>=4.66.0
+
+# Notebook Environment
+jupyter>=1.0.0
+notebook>=7.0.0
+ipykernel>=6.25.0
