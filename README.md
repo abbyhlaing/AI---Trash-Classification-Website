@@ -154,6 +154,15 @@ http://127.0.0.1:5300
 
 ---
 
+## Team Members
+
+- Han Paye Tun — AI & Machine Learning Engineer (Team Leader)
+- Shin Myat Noe Zin — Dataset Engineer
+- Lin Wai Yan — Website Developer
+- Yu Nandar Hlaing — Integration & Testing Analyst
+- Thant Htoo San — Evaluation & Documentation Analyst
+
+---
 ## Author
 @abbyhlaing
 
